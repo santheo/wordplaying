@@ -1,0 +1,138 @@
+movement:
+  - about
+  - active
+  - agitated
+  - animated
+  - bustling
+  - dancing
+  - fidgeting
+  - fluid
+  - flying
+  - jumping
+  - mobile
+  - moving
+  - racing
+  - running
+  - rushing
+  - shifting
+  - stirring
+  - swaying
+  - swimming
+  - swinging
+  - wandering
+  - working
+
+disorder:
+  - amiss
+  - awkward
+  - chaotic
+  - confused
+  - deranged
+  - disorderly
+  - disrupted
+  - disturbed
+  - erratic
+  - jumbled
+  - mixed
+  - muddled
+  - scattered
+  - scrambled
+  - shaken
+  - tangled
+  - untidy
+  - wild
+
+transformation:
+  - altered
+  - changing
+  - converted
+  - developed
+  - evolved
+  - fashioned
+  - formed
+  - made from
+  - modified
+  - mutated
+  - processed
+  - refined
+  - reformed
+  - remodeled
+  - renovated
+  - revised
+  - transformed
+  - treated
+
+destruction:
+  - broken
+  - collapsed
+  - cracked
+  - crashed
+  - damaged
+  - demolished
+  - destroyed
+  - exploded
+  - fractured
+  - mangled
+  - ruined
+  - shattered
+  - smashed
+  - splintered
+  - wrecked
+
+cooking:
+  - baked
+  - blended
+  - boiled
+  - cooked
+  - curried
+  - fired
+  - fried
+  - grilled
+  - heated
+  - minced
+  - prepared
+  - processed
+  - roasted
+  - sautéed
+  - stewed
+
+bad_state:
+  - abnormal
+  - awful
+  - bad
+  - corrupt
+  - dreadful
+  - irregular
+  - peculiar
+  - poor
+  - strange
+  - terrible
+  - unstable
+  - weird
+  - wrong
+
+reconstruction:
+  - arranged
+  - assembled
+  - built
+  - composed
+  - constructed
+  - designed
+  - engineered
+  - fabricated
+  - manufactured
+  - organized
+  - planned
+  - prepared
+  - produced
+  - structured
+
+medical:
+  - delirious
+  - diseased
+  - feverish
+  - ill
+  - infected
+  - neurotic
+  - sick
+  - unwell

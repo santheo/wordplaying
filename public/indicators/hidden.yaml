@@ -1,0 +1,84 @@
+containment:
+  - carried by
+  - concealed in
+  - contained in
+  - embedded in
+  - found in
+  - held by
+  - held in
+  - hidden in
+  - housed in
+  - in
+  - inside
+  - kept in
+  - placed in
+  - caught in
+  - stored in
+  - within
+
+extraction:
+  - drawn from
+  - excerpt from
+  - extracted from
+  - from
+  - picked from
+  - pulled from
+  - taken from
+  - selection from
+  - segment of
+  - slice of
+
+revelation:
+  - appearing in
+  - comes out of
+  - comes up in
+  - displaying
+  - emerging from
+  - revealed in
+  - showing in
+  - visible in
+
+partial_visibility:
+  - partly
+  - partially
+  - some
+  - somewhat
+  - bit of
+  - piece of
+  - part of
+  - section of
+
+concealment:
+  - among
+  - amid
+  - between
+  - buried in
+  - camouflaged in
+  - covered by
+  - hiding in
+  - masked by
+  - obscured by
+  - sheltered by
+  - surrounded by
+  - wrapped in
+
+discovery:
+  - can be found in
+  - discovered in
+  - find
+  - locate in
+  - lurking in
+  - notice in
+  - observe in
+  - read in
+  - see in
+  - spot in
+
+composition:
+  - built into
+  - filling
+  - formed in
+  - made from
+  - occupying
+  - running through
+  - worked into

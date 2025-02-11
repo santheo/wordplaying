@@ -1,0 +1,74 @@
+containment:
+  - accepting
+  - carrying
+  - containing
+  - embracing
+  - enclosing
+  - holding
+  - housing
+  - keeping
+  - protecting
+  - supporting
+  - surrounding
+  - taking
+
+insertion:
+  - amid
+  - among
+  - between
+  - during
+  - filling
+  - in
+  - inside
+  - into
+  - middle of
+  - put in
+  - within
+
+absorption:
+  - absorbing
+  - consuming
+  - digesting
+  - eating
+  - drinking
+  - swallowing
+  - taking in
+
+clothing:
+  - about
+  - around
+  - clothed in
+  - covering
+  - dressed in
+  - wearing
+  - wrapped in
+
+protection:
+  - guarded by
+  - protected by
+  - sheltered by
+  - shielded by
+
+placement:
+  - centrally
+  - deep in
+  - firmly in
+  - planted in
+  - settled in
+  - stuffed in
+
+container_types:
+  - bag
+  - bottle
+  - box
+  - case
+  - cell
+  - chamber
+  - heart
+  - house
+  - jar
+  - nest
+  - pocket
+  - room
+  - shell
+  - vessel

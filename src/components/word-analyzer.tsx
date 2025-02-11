@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
 import _ from 'lodash';
+import YAML from 'yaml';
 
 const WordAnalyzer = () => {
   // Get word from URL
@@ -95,11 +96,12 @@ const WordAnalyzer = () => {
   const indicatorTypes = [
     { id: 'anagrams', label: 'Anagrams' },
     { id: 'hidden', label: 'Hidden' },
+    { id: 'insertion', label: 'Insertion' },
+    { id: 'deletion', label: 'Deletion' },
     { id: 'reversal', label: 'Reversal' },
     { id: 'first', label: 'First' },
     { id: 'last', label: 'Last' },
-    { id: 'outside', label: 'Outside' },
-    { id: 'inside', label: 'Inside' },
+    { id: 'edge', label: 'Edge' },
   ];
 
   // Handle filter click
@@ -122,21 +124,24 @@ const WordAnalyzer = () => {
   useEffect(() => {
     const loadIndicatorList = async (type) => {
       try {
-        const response = await window.fs.readFile(`indicators/${type}.txt`, { encoding: 'utf8' });
-        const words = response.trim().split('\n').map(word => word.trim());
+        const response = await fetch(`/indicators/${type}.yaml`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        const data = YAML.parse(text);
         setIndicatorLists(prev => ({
           ...prev,
-          [type]: words
+          [type]: data
         }));
       } catch (error) {
         console.error(`Error loading ${type} indicators:`, error);
         setIndicatorLists(prev => ({
           ...prev,
-          [type]: [`Error loading ${type} indicators`]
+          [type]: { error: `Error loading ${type} indicators` }
         }));
       }
     };
-
     // Load all indicator lists
     indicatorTypes.forEach(({ id }) => {
       loadIndicatorList(id);
@@ -147,16 +152,28 @@ const WordAnalyzer = () => {
   const handleIndicatorClick = (indicatorId) => {
     setActiveIndicator(indicatorId);
     
-    const indicatorWords = indicatorLists[indicatorId] || [];
+    const indicatorData = indicatorLists[indicatorId];
+    if (!indicatorData) {
+      setFilterResult('Loading indicators...');
+      return;
+    }
+
     setFilterResult(
-      <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-2 gap-2">
-          {indicatorWords.map((word, index) => (
-            <div key={index} className="text-gray-700">
-              {index + 1}. {word}
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-col gap-4">
+        {Object.entries(indicatorData).map(([category, words]) => (
+          <div key={category} className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-800 mt-4">
+              {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </h3>
+            <ul className="list-disc pl-6 space-y-1">
+              {Array.isArray(words) && words.map((word, index) => (
+                <li key={index} className="text-gray-700">
+                  {word}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     );
   };

@@ -1,0 +1,78 @@
+upward_movement:  # for Down clues
+- advancing
+- ascending
+- climbing
+- going up
+- mounting
+- raised
+- rising
+- soaring
+- springing
+- surging
+- uplifting
+- upping
+
+backward_movement:  # for Across clues
+- backing
+- bouncing
+- bouncing back
+- retreating
+- returning
+- reversing
+- turning
+- turning back
+
+reflection:
+- reflecting
+- reflected
+- mirrored
+
+direction_changes:
+- about
+- around
+- backward
+- backwards
+- counter
+- down under
+- east to west
+- from right to left
+- in reverse
+- inverted
+- north to south
+- over
+- revolving
+- round
+- twisted
+- upended
+- upside down
+- west to east
+
+computing_terms:
+- backspace
+- return
+- undo
+
+vehicle_related:
+- breaking
+- driving back
+- pulling back
+- reversed
+- reversing
+- u-turn
+
+miscellaneous:
+- back
+- bottomless
+- capsized
+- cartwheeling
+- contrary
+- flipped
+- from behind
+- in retrospect
+- overturned
+- rebounding
+- receding
+- retrograde
+- somersaulting
+- toppled
+- upset

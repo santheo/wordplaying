@@ -1,0 +1,82 @@
+removal:
+  - abandoned
+  - cut
+  - deleted
+  - dropped
+  - eliminated
+  - excluded
+  - lacking
+  - missing
+  - omitting
+  - removed
+  - stripped
+  - taken away
+  - without
+
+reduction:
+  - abbreviated
+  - beheaded
+  - curtailed
+  - declined
+  - decreased
+  - docked
+  - limited
+  - reduced
+  - shortened
+  - trimmed
+
+loss:
+  - losing
+  - lost
+  - minus
+  - sacrificing
+  - shedding
+  - short of
+  - wanting
+
+damage:
+  - broken
+  - damaged
+  - defaced
+  - injured
+  - mutilated
+  - wounded
+
+specific_removals:
+  head_removal:  # First letter
+    - beheaded
+    - topless
+    - unleaded
+    - with no head
+    - with no leader
+  
+  tail_removal:  # Last letter
+    - almost
+    - endless
+    - nearly
+    - not quite
+    - tailless
+    - unfinished
+  
+  heart_removal:  # Middle letter(s)
+    - heartless
+    - hollow
+    - with no heart
+    - with no middle
+
+  edge_removal:  # First and last letters
+    - edgeless
+    - exposed
+    - peeled
+    - shelled
+    - skinned
+
+emptying:
+  - bankrupt
+  - bare
+  - cleared
+  - empty
+  - evacuated
+  - naked
+  - vacant
+  - void
