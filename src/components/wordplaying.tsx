@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
-import _ from 'lodash';
 import YAML from 'yaml';
 
 const Wordplaying: React.FC = () => { 
@@ -378,7 +377,7 @@ const Wordplaying: React.FC = () => {
                   </ul>
                 </div>
               )
-            : `No cryptic abbreviations found for "${upperSelected}"`
+            : `No cryptic abbreviations found for '${upperSelected}'`
         );
         break;
       case 'anagrams':
