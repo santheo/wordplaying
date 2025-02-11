@@ -35,7 +35,7 @@ const WordAnalyzer = () => {
     try {
       const API_KEY = process.env.NEXT_PUBLIC_WORDNIK_API_KEY;
       const baseUrl = 'https://api.wordnik.com/v4/word.json';
-      
+
       // Fetch both definitions and related words in parallel
       const [definitionResponse, relatedResponse] = await Promise.all([
         fetch(`${baseUrl}/${wordToFetch}/definitions?limit=5&api_key=${API_KEY}`),
@@ -47,13 +47,31 @@ const WordAnalyzer = () => {
         relatedResponse.json()
       ]);
 
+      // Initialize synonyms array - handle case where relatedWords is empty or malformed
+      let synonyms = [];
+      if (Array.isArray(relatedWords) && relatedWords.length > 0) {
+        const synonymObj = relatedWords.find(rel => rel.relationshipType === 'synonym');
+        synonyms = synonymObj?.words || [];
+      }
+
+      // Check if we got any data back
+      if (!definitions || definitions.length === 0) {
+        console.warn(`No definitions found for word: ${wordToFetch}`);
+        setWordData(prevData => ({
+          ...prevData,
+          [wordToFetch]: { definitions: [], synonyms }
+        }));
+        setIsLoading(false);
+        return false;
+      }
+
       // Process the data before updating state
       const newWordData = {
         definitions: definitions.map(def => ({
-          partOfSpeech: def.partOfSpeech,
-          text: def.text
+          partOfSpeech: def.partOfSpeech || 'unknown',
+          text: def.text || 'No definition available'
         })),
-        synonyms: relatedWords.find(rel => rel.relationshipType === 'synonym')?.words || []
+        synonyms
       };
 
       // Update state in a single batch
