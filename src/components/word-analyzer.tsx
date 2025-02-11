@@ -270,9 +270,10 @@ const WordAnalyzer: React.FC = () => {
   useEffect(() => {
     const loadCrypticDict = async () => {
       try {
-        const response = await fetch('/wordplaying/cryptic-dict.json');
-        const dict = await response.json();
-        console.log('Parsed dictionary:', Object.keys(dict).length, 'entries');
+        const response = await fetch('/abbreviations.yaml');
+        const text = await response.text();
+        const dict = YAML.parse(text);
+        console.log('Abbreviations:', Object.keys(dict).length, 'entries');
         setCrypticDict(dict);
       } catch (error) {
         console.error('Error loading cryptic dictionary:', error);
@@ -282,7 +283,6 @@ const WordAnalyzer: React.FC = () => {
     
     loadCrypticDict();
   }, []);
-
   // Fetch initial word data
   useEffect(() => {
     fetchWordData(word);
@@ -364,19 +364,21 @@ const WordAnalyzer: React.FC = () => {
         break;
       case 'cryptic':
         const upperSelected = selected.toUpperCase();
-        const crypticResult = crypticDict[upperSelected];
+        const crypticResult = crypticDict[selected.toLowerCase()];
         setFilterResult(
           crypticResult 
             ? (
                 <div className="flex flex-col gap-2">
+                  <ul>
                   {crypticResult.map((result, index) => (
-                    <div key={index} className="text-gray-700">
-                      {index + 1}. {result}
-                    </div>
+                    <li key={index} className="text-gray-700 list-disc ml-4">
+                      {result}
+                    </li>
                   ))}
+                  </ul>
                 </div>
               )
-            : `No cryptic abbreviations found for "${selected}"`
+            : `No cryptic abbreviations found for "${upperSelected}"`
         );
         break;
       case 'anagrams':
