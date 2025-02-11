@@ -20,6 +20,10 @@ const WordAnalyzer = () => {
   
   // Fetch word data from Wordnik
   const fetchWordData = async (wordToFetch) => {
+    if (wordData[wordToFetch]) {
+      return true; // Already have this word's data
+    }
+
     setIsLoading(true);
     setError(null);
     
@@ -27,39 +31,49 @@ const WordAnalyzer = () => {
       const API_KEY = process.env.NEXT_PUBLIC_WORDNIK_API_KEY;
       const baseUrl = 'https://api.wordnik.com/v4/word.json';
       
-      // Fetch definitions
-      const definitionResponse = await fetch(
-        `${baseUrl}/${wordToFetch}/definitions?limit=5&api_key=${API_KEY}`
-      );
-      const definitions = await definitionResponse.json();
-      
-      // Fetch related words (including synonyms)
-      const relatedResponse = await fetch(
-        `${baseUrl}/${wordToFetch}/relatedWords?relationshipTypes=synonym&limitPerRelationshipType=10&api_key=${API_KEY}`
-      );
-      const relatedWords = await relatedResponse.json();
-    
+      // Fetch both definitions and related words in parallel
+      const [definitionResponse, relatedResponse] = await Promise.all([
+        fetch(`${baseUrl}/${wordToFetch}/definitions?limit=5&api_key=${API_KEY}`),
+        fetch(`${baseUrl}/${wordToFetch}/relatedWords?relationshipTypes=synonym&limitPerRelationshipType=10&api_key=${API_KEY}`)
+      ]);
+
+      const [definitions, relatedWords] = await Promise.all([
+        definitionResponse.json(),
+        relatedResponse.json()
+      ]);
+
+      // Process the data before updating state
+      const newWordData = {
+        definitions: definitions.map(def => ({
+          partOfSpeech: def.partOfSpeech,
+          text: def.text
+        })),
+        synonyms: relatedWords.find(rel => rel.relationshipType === 'synonym')?.words || []
+      };
+
+      // Update state in a single batch
       setWordData(prevData => ({
         ...prevData,
-        [wordToFetch]: {
-          definitions: definitions.map(def => ({
-            partOfSpeech: def.partOfSpeech,
-            text: def.text
-          })),
-          synonyms: relatedWords.find(rel => rel.relationshipType === 'synonym')?.words || []
-        }
+        [wordToFetch]: newWordData
       }));
       
-      return true;  // Success
-    } catch (err) {
-      if (err.response?.status === 404) {
-        return false;  // Word not found
-      }
-      setError('Failed to fetch word data. Please check your API key.');
-      console.error('Error fetching word data:', err);
-      return false;
-    } finally {
       setIsLoading(false);
+      return true;
+    } catch (err) {
+      console.error('Error fetching word data:', err);
+      
+      if (err.response?.status === 404) {
+        setWordData(prevData => ({
+          ...prevData,
+          [wordToFetch]: { definitions: [], synonyms: [] }
+        }));
+        setIsLoading(false);
+        return false;
+      }
+      
+      setError('Failed to fetch word data. Please check your API key.');
+      setIsLoading(false);
+      return false;
     }
   };
 
@@ -183,22 +197,26 @@ const WordAnalyzer = () => {
             displayWordData(word) || `No ${activeFilter} found`
           );
         } else if (selected !== word) {
-          // Show lookup button for substrings
-          setFilterResult(
-            <div className="flex flex-col items-center gap-4">
-              <p>Selected letters form: <strong>{selected}</strong></p>
-              {wordData[selected] ? (
-                displayWordData(selected) || `No ${activeFilter} found for "${selected}"`
-              ) : (
+          const subwordData = wordData[selected];
+          if (subwordData) {
+            setFilterResult(displayWordData(selected) || `No ${activeFilter} found for "${selected}"`);
+          } else {
+            setFilterResult(
+              <div className="flex flex-col items-center gap-4">
+                <p>Selected letters form: <strong>{selected}</strong></p>
                 <button
-                  onClick={() => fetchWordData(selected)}
+                  onClick={async () => {
+                    await fetchWordData(selected);
+                    // Force re-render after fetch
+                    setActiveFilter(current => current);
+                  }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
                 >
                   Look up "{selected}"
                 </button>
-              )}
-            </div>
-          );
+              </div>
+            );
+          }
         }
         break;
       case 'cryptic':
@@ -247,7 +265,7 @@ const WordAnalyzer = () => {
       default:
         setFilterResult('Select a filter to see results');
     }
-  }, [activeFilter, selectedLetters]);
+  }, [activeFilter, selectedLetters, wordData, word, isLoading, error]);
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -281,7 +299,7 @@ const WordAnalyzer = () => {
             >
               {letter}
             </button>
-                      ))}
+            ))}
           </div>
 
           <button
