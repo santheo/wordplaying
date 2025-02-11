@@ -8,7 +8,7 @@ import YAML from 'yaml';
 
 const WordAnalyzer = () => {
   // Get word from URL
-  const word = new URLSearchParams(window.location.search).get('word')?.toLowerCase() || 'example';
+  const word = window.location.hash.slice(1).toLowerCase() || 'example';
 
   // State management
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
@@ -470,7 +470,7 @@ const WordAnalyzer = () => {
               key={filter.id}
               onClick={() => handleFilterClick(filter.id)}
               className={`
-                px-4 py-2 rounded-full text-sm font-medium
+                px-3 py-1 rounded-lg text-sm font-medium
                 transition-colors duration-200
                 ${activeFilter === filter.id
                   ? 'bg-blue-500 text-white'
@@ -484,13 +484,13 @@ const WordAnalyzer = () => {
 
         {/* Secondary nav for indicators */}
         {showIndicators && (
-          <div className="flex flex-wrap gap-2 mb-6 justify-center">
+          <div className="flex flex-wrap gap-1 mb-6 justify-center">
             {indicatorTypes.map(indicator => (
               <button
                 key={indicator.id}
                 onClick={() => handleIndicatorClick(indicator.id)}
                 className={`
-                  px-4 py-2 rounded-full text-sm font-medium
+                  px-2 py-1 rounded-lg text-sm font-medium
                   transition-colors duration-200
                   ${activeIndicator === indicator.id
                     ? 'bg-blue-500 text-white'
