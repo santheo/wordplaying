@@ -137,9 +137,9 @@ const WordAnalyzer = () => {
   useEffect(() => {
     const loadCrypticDict = async () => {
       try {
-        const response = await window.fs.readFile('/public/cryptic-dict.json');
-        const text = new TextDecoder().decode(response);
-        const dict = JSON.parse(text);
+        const response = await fetch('/cryptic-dict.json');
+        const dict = await response.json();
+        console.log('Parsed dictionary:', Object.keys(dict).length, 'entries');
         setCrypticDict(dict);
       } catch (error) {
         console.error('Error loading cryptic dictionary:', error);
