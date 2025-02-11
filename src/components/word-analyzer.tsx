@@ -289,7 +289,14 @@ const WordAnalyzer = () => {
             
             return true;
           })
-          .sort();
+          .sort((a, b) => {
+            // First sort by length
+            if (a.length !== b.length) {
+              return a.length - b.length;
+            }
+            // If lengths are equal, sort alphabetically
+            return a.localeCompare(b);
+          });
 
         setFilterResult(
           containingWords.length > 0 
