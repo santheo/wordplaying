@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
 import YAML from 'yaml';
 
-const Wordplaying: React.FC = () => { 
+const Wordplaying = (): React.ReactElement => {
   // Get word from URL
   const word = window.location.search.slice(1).toLowerCase() || 'example';
 
