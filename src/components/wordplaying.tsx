@@ -23,7 +23,7 @@ const Wordplaying = (): React.ReactElement => {
   const [activeIndicator, setActiveIndicator] = useState(null);
 
   // Fetch word data from Wordnik
-  const fetchWordData = async (wordToFetch) => {
+  const fetchWordData = async (wordToFetch: string) => {
     if (wordData[wordToFetch]) {
       return true; // Already have this word's data
     }
