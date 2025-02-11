@@ -83,6 +83,7 @@ const WordAnalyzer = () => {
     { id: 'synonyms', label: 'Synonyms' },
     { id: 'cryptic', label: 'Abbreviations' },
     { id: 'anagrams', label: 'Anagrams' },
+    { id: 'center', label: 'Center' },
   ];
 
   // Select/deselect all letters
@@ -266,6 +267,47 @@ const WordAnalyzer = () => {
                 </div>
               )
             : `No valid anagrams found for "${selected}"`
+        );
+        break;
+
+      case 'center':
+        if (!wordlist || wordlist.size === 0) {
+          setFilterResult('Loading wordlist...');
+          break;
+        }
+
+        // Find words that contain the selected string in the middle
+        const containingWords = Array.from(wordlist)
+          .filter(word => {
+            // The word must be longer than the selected string
+            if (word.length <= selected.length) return false;
+            
+            // The selected string can't be at the start or end
+            const index = word.indexOf(selected);
+            if (index <= 0) return false;
+            if (index + selected.length >= word.length) return false;
+            
+            return true;
+          })
+          .sort();
+
+        setFilterResult(
+          containingWords.length > 0 
+            ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-gray-600 mb-2">
+                    Found {containingWords.length} words containing "{selected}" in the middle:
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {containingWords.map((word, index) => (
+                      <div key={index} className="text-gray-700">
+                        {index + 1}. {word}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            : `No words found containing "${selected}" in the middle`
         );
         break;
       default:
