@@ -66,7 +66,7 @@ const WordAnalyzer: React.FC = () => {
       }
       
       // strip XML tags
-      const strimXMLTags = (text) => {
+      const stripXMLTags = (text) => {
         return text.replace(/<\/?xref>/g, '');
       };
 
@@ -74,7 +74,7 @@ const WordAnalyzer: React.FC = () => {
       const newWordData = {
         definitions: definitions.map(def => ({
           partOfSpeech: def.partOfSpeech || 'unknown',
-          text: strimXMLTags(def.text) || 'No definition available'
+          text: stripXMLTags(def.text) || 'No definition available'
         })),
         synonyms
       };
