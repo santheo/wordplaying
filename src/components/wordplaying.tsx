@@ -355,7 +355,7 @@ const Wordplaying: React.FC = () => {
                   }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
                 >
-                  Look up '{selected}'
+                  Look up &apos;{selected}&apos;
                 </button>
               </div>
             );
@@ -378,7 +378,7 @@ const Wordplaying: React.FC = () => {
                   </ul>
                 </div>
               )
-            : `No cryptic abbreviations found for '${upperSelected}'`
+            : `No cryptic abbreviations found for "${upperSelected}"`
         );
         break;
       case 'anagrams':
@@ -444,7 +444,7 @@ const Wordplaying: React.FC = () => {
             ? (
                 <div className="flex flex-col gap-2">
                   <p className="text-gray-600 mb-2">
-                    Found {allContainingWords.length} words containing '{selected}' in the middle
+                    Found {allContainingWords.length} words containing &apos;{selected}&apos; in the middle
                     {hasMoreResults ? ` (showing first 200)` : ''}:
                   </p>
                   <div className="grid grid-cols-2 gap-2">
