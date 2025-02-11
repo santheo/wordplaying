@@ -227,7 +227,8 @@ const Wordplaying: React.FC = () => {
   };
 
   // Generate anagrams
-  const generateAnagrams = (str) => {
+  const generateAnagrams = React.useCallback((str) => {
+
     if (str.length <= 1) return [str];
     const result = new Set();
     
@@ -242,7 +243,7 @@ const Wordplaying: React.FC = () => {
     }
     
     return Array.from(result);
-  };
+  }, []);
 
   // Load wordlist
   useEffect(() => {
@@ -354,7 +355,7 @@ const Wordplaying: React.FC = () => {
                   }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
                 >
-                  Look up "{selected}"
+                  Look up '{selected}'
                 </button>
               </div>
             );
@@ -443,7 +444,7 @@ const Wordplaying: React.FC = () => {
             ? (
                 <div className="flex flex-col gap-2">
                   <p className="text-gray-600 mb-2">
-                    Found {allContainingWords.length} words containing "{selected}" in the middle
+                    Found {allContainingWords.length} words containing '{selected}' in the middle
                     {hasMoreResults ? ` (showing first 200)` : ''}:
                   </p>
                   <div className="grid grid-cols-2 gap-2">
