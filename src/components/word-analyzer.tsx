@@ -83,7 +83,6 @@ const WordAnalyzer = () => {
     { id: 'synonyms', label: 'Synonyms' },
     { id: 'cryptic', label: 'Abbreviations' },
     { id: 'anagrams', label: 'Anagrams' },
-    { id: 'wordplay', label: 'Word Play' }
   ];
 
   // Select/deselect all letters
@@ -268,9 +267,6 @@ const WordAnalyzer = () => {
               )
             : `No valid anagrams found for "${selected}"`
         );
-        break;
-      case 'wordplay':
-        setFilterResult(`Selected letters can be used in: ${selected.split('').join(' + ')}`);
         break;
       default:
         setFilterResult('Select a filter to see results');
