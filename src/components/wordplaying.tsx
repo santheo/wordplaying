@@ -5,6 +5,43 @@ import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
 import YAML from 'yaml';
 
+interface Definition {
+  partOfSpeech: string;
+  text: string;
+}
+
+interface WordnikDefinition {
+  partOfSpeech?: string;
+  text?: string;
+  relationshipType?: string;
+  words?: string[];
+}
+
+interface CrypticDictionary {
+  [key: string]: string[];
+}
+
+interface WordData {
+  definitions: Definition[];
+  synonyms: string[];
+}
+
+interface WordDataMap {
+  [key: string]: WordData;
+}
+
+interface IndicatorCategory {
+  [key: string]: string[];
+}
+
+interface IndicatorError {
+  error: string;
+}
+
+interface IndicatorLists {
+  [key: string]: IndicatorCategory | IndicatorError;
+}
+
 const Wordplaying = (): React.ReactElement => {
   // Get word from URL
   const word = window.location.search.slice(1).toLowerCase() || 'example';
@@ -13,14 +50,14 @@ const Wordplaying = (): React.ReactElement => {
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
-  const [wordData, setWordData] = useState({});  // Changed to store multiple words
+  const [wordData, setWordData] = useState<WordDataMap>({});
   const [wordlist, setWordlist] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  // New state for indicators
+  const [error, setError] = useState<string | null>(null);
   const [showIndicators, setShowIndicators] = useState(false);
-  const [activeIndicator, setActiveIndicator] = useState(null);
+  const [activeIndicator, setActiveIndicator] = useState<string | null>(null);
+  const [indicatorLists, setIndicatorLists] = useState<IndicatorLists>({});
+  const [crypticDict, setCrypticDict] = useState<CrypticDictionary>({});
 
   // Fetch word data from Wordnik
   const fetchWordData = async (wordToFetch: string) => {
@@ -65,13 +102,13 @@ const Wordplaying = (): React.ReactElement => {
       }
       
       // strip XML tags
-      const stripXMLTags = (text) => {
+      const stripXMLTags = (text: string) => {
         return text ? text.replace(/<\/?xref>/g, '') : '';
       };
 
       // Process the data before updating state
       const newWordData = {
-        definitions: definitions.map(def => ({
+        definitions: definitions.map((def: WordnikDefinition) => ({
           partOfSpeech: def.partOfSpeech || 'unknown',
           text: stripXMLTags(def.text) || 'No definition available'
         })),
@@ -89,7 +126,9 @@ const Wordplaying = (): React.ReactElement => {
     } catch (err) {
       console.error('Error fetching word data:', err);
       
-      if (err.response?.status === 404) {
+      if (err && typeof err === 'object' && 'response' in err && 
+        err.response && typeof err.response === 'object' && 'status' in err.response
+        && err.response?.status === 404) {
         setWordData(prevData => ({
           ...prevData,
           [wordToFetch]: { definitions: [], synonyms: [] }
@@ -127,7 +166,7 @@ const Wordplaying = (): React.ReactElement => {
   ];
 
   // Handle filter click
-  const handleFilterClick = (filterId) => {
+  const handleFilterClick = (filterId: string) => {
     if (filterId === 'indicators') {
       setShowIndicators(true);
       setActiveFilter('indicators');
@@ -138,13 +177,9 @@ const Wordplaying = (): React.ReactElement => {
     }
   };
 
-  // State for indicator lists
-  const [indicatorLists, setIndicatorLists] = useState({});
-
-
   // Load indicator lists
   useEffect(() => {
-    const loadIndicatorList = async (type) => {
+    const loadIndicatorList = async (type: string) => {
       try {
         const response = await fetch(`/indicators/${type}.yaml`);
         if (!response.ok) {
@@ -171,7 +206,7 @@ const Wordplaying = (): React.ReactElement => {
   }, []);
 
   // Handle indicator click
-  const handleIndicatorClick = (indicatorId) => {
+  const handleIndicatorClick = (indicatorId: string) => {
     setActiveIndicator(indicatorId);
     
     const indicatorData = indicatorLists[indicatorId];
@@ -210,7 +245,7 @@ const Wordplaying = (): React.ReactElement => {
   };
 
   // Toggle letter selection
-  const toggleLetter = (index) => {
+  const toggleLetter = (index: number) => {
     if (selectedLetters.includes(index)) {
       setSelectedLetters(selectedLetters.filter(i => i !== index));
     } else {
@@ -227,10 +262,10 @@ const Wordplaying = (): React.ReactElement => {
   };
 
   // Generate anagrams
-  const generateAnagrams = React.useCallback((str) => {
+  const generateAnagrams = React.useCallback((str: string): string[] => {
 
     if (str.length <= 1) return [str];
-    const result = new Set();
+    const result = new Set<string>();
     
     for (let i = 0; i < str.length; i++) {
       const char = str[i];
@@ -263,9 +298,6 @@ const Wordplaying = (): React.ReactElement => {
     loadWordlist();
   }, []);
 
-  // State for cryptic dictionary
-  const [crypticDict, setCrypticDict] = useState({});
-
   // Load cryptic dictionary
   useEffect(() => {
     const loadCrypticDict = async () => {
@@ -289,7 +321,7 @@ const Wordplaying = (): React.ReactElement => {
   }, [word]);
 
   // Display word data based on active filter
-  const displayWordData = (wordToDisplay) => {
+  const displayWordData = (wordToDisplay: string) => {
     const data = wordData[wordToDisplay];
     
     if (!data) return null;
@@ -387,7 +419,7 @@ const Wordplaying = (): React.ReactElement => {
           break;
         }
         
-        const anagrams = generateAnagrams(selected)
+        const anagrams: string[] = generateAnagrams(selected)
           .filter(anagram => wordlist.has(anagram.toLowerCase()));
         
         setFilterResult(
