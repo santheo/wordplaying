@@ -1,5 +1,5 @@
-import WordAnalyzer from '@/components/word-analyzer';
+import Wordplaying from '@/components/wordplaying';
 
 export default function Home() {
-  return <WordAnalyzer />;
+  return <Wordplaying />;
 }

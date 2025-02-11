@@ -6,7 +6,7 @@ import { CheckSquare, XSquare } from 'lucide-react';
 import _ from 'lodash';
 import YAML from 'yaml';
 
-const WordAnalyzer: React.FC = () => { 
+const Wordplaying: React.FC = () => { 
   // Get word from URL
   const word = window.location.search.slice(1).toLowerCase() || 'example';
 
@@ -559,4 +559,4 @@ const WordAnalyzer: React.FC = () => {
   );
 };
 
-export default WordAnalyzer;
+export default Wordplaying;
