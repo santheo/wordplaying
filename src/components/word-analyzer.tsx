@@ -10,7 +10,7 @@ const WordAnalyzer = () => {
   const word = new URLSearchParams(window.location.search).get('word')?.toLowerCase() || 'example';
 
   // State management
-  const [selectedLetters, setSelectedLetters] = useState([]);
+  const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
   const [filterResult, setFilterResult] = useState('');
   const [wordData, setWordData] = useState({});  // Changed to store multiple words
@@ -83,7 +83,7 @@ const WordAnalyzer = () => {
     { id: 'synonyms', label: 'Synonyms' },
     { id: 'cryptic', label: 'Abbreviations' },
     { id: 'anagrams', label: 'Anagrams' },
-    { id: 'contains', label: 'Contains in Middle' },
+    { id: 'contains', label: 'Center' },
   ];
 
   // Select/deselect all letters
