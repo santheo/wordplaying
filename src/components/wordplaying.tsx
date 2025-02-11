@@ -42,6 +42,28 @@ interface IndicatorLists {
   [key: string]: IndicatorCategory | IndicatorError;
 }
 
+// Available filters
+const filters = [
+  { id: 'definition', label: 'Def' },
+  { id: 'synonyms', label: 'Syn' },
+  { id: 'cryptic', label: 'Abbr' },
+  { id: 'anagrams', label: 'Anagram' },
+  { id: 'contains', label: 'Center' },
+  { id: 'indicators', label: 'Indicators' },
+];
+
+// Secondary nav for indicators
+const indicatorTypes = [
+  { id: 'anagrams', label: 'Anagrams' },
+  { id: 'hidden', label: 'Hidden' },
+  { id: 'insertion', label: 'Insertion' },
+  { id: 'deletion', label: 'Deletion' },
+  { id: 'reversal', label: 'Reversal' },
+  { id: 'first', label: 'First' },
+  { id: 'last', label: 'Last' },
+  { id: 'edge', label: 'Edge' },
+];
+
 const Wordplaying = (): React.ReactElement => {
   // Get word from URL
   const word = window.location.search.slice(1).toLowerCase() || 'example';
@@ -51,7 +73,7 @@ const Wordplaying = (): React.ReactElement => {
   const [activeFilter, setActiveFilter] = useState('definition');
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
   const [wordData, setWordData] = useState<WordDataMap>({});
-  const [wordlist, setWordlist] = useState(new Set());
+  const [wordlist, setWordlist] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showIndicators, setShowIndicators] = useState(false);
@@ -110,10 +132,11 @@ const Wordplaying = (): React.ReactElement => {
       const newWordData = {
         definitions: definitions.map((def: WordnikDefinition) => ({
           partOfSpeech: def.partOfSpeech || 'unknown',
-          text: stripXMLTags(def.text) || 'No definition available'
+          text: stripXMLTags(def.text || 'No definition available')
         })),
         synonyms
       };
+
 
       // Update state in a single batch
       setWordData(prevData => ({
@@ -143,27 +166,7 @@ const Wordplaying = (): React.ReactElement => {
     }
   };
 
-  // Available filters
-  const filters = [
-    { id: 'definition', label: 'Def' },
-    { id: 'synonyms', label: 'Syn' },
-    { id: 'cryptic', label: 'Abbr' },
-    { id: 'anagrams', label: 'Anagram' },
-    { id: 'contains', label: 'Center' },
-    { id: 'indicators', label: 'Indicators' },
-  ];
 
-  // Secondary nav for indicators
-  const indicatorTypes = [
-    { id: 'anagrams', label: 'Anagrams' },
-    { id: 'hidden', label: 'Hidden' },
-    { id: 'insertion', label: 'Insertion' },
-    { id: 'deletion', label: 'Deletion' },
-    { id: 'reversal', label: 'Reversal' },
-    { id: 'first', label: 'First' },
-    { id: 'last', label: 'Last' },
-    { id: 'edge', label: 'Edge' },
-  ];
 
   // Handle filter click
   const handleFilterClick = (filterId: string) => {
@@ -446,7 +449,7 @@ const Wordplaying = (): React.ReactElement => {
         }
 
         // Find words that contain the selected string in the middle
-        const allContainingWords = Array.from(wordlist)
+        const allContainingWords = Array.from(wordlist as Set<string>)
           .filter(word => {
             // The word must be longer than the selected string
             if (word.length <= selected.length) return false;
@@ -458,7 +461,7 @@ const Wordplaying = (): React.ReactElement => {
             
             return true;
           })
-          .sort((a, b) => {
+          .sort((a: string, b: string) => {
             // First sort by length
             if (a.length !== b.length) {
               return a.length - b.length;
