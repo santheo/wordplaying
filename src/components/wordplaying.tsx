@@ -12,7 +12,7 @@ const Wordplaying = (): React.ReactElement => {
   // State management
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
-  const [filterResult, setFilterResult] = useState<string | JSX.Element>('');
+  const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
   const [wordData, setWordData] = useState({});  // Changed to store multiple words
   const [wordlist, setWordlist] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
