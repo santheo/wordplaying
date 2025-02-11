@@ -81,7 +81,7 @@ const WordAnalyzer = () => {
   const filters = [
     { id: 'definition', label: 'Definition' },
     { id: 'synonyms', label: 'Synonyms' },
-    { id: 'cryptic', label: 'Cryptic Abbreviations' },
+    { id: 'cryptic', label: 'Abbreviations' },
     { id: 'anagrams', label: 'Anagrams' },
     { id: 'wordplay', label: 'Word Play' }
   ];
@@ -129,6 +129,24 @@ const WordAnalyzer = () => {
     
     return Array.from(result);
   };
+
+  // Load wordlist
+  useEffect(() => {
+    const loadWordlist = async () => {
+      try {
+        const response = await fetch('/wordlist.txt');
+        const text = await response.text();
+        const words = new Set(text.split('\n').map(word => word.trim().toLowerCase()));
+        console.log('Loaded wordlist:', words.size, 'words');
+        setWordlist(words);
+      } catch (error) {
+        console.error('Error loading wordlist:', error);
+        setError('Failed to load wordlist');
+      }
+    };
+    
+    loadWordlist();
+  }, []);
 
   // State for cryptic dictionary
   const [crypticDict, setCrypticDict] = useState({});
