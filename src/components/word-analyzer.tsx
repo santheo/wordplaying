@@ -290,17 +290,27 @@ const WordAnalyzer = () => {
     if (!data) return null;
 
     if (activeFilter === 'definition') {
-      return data.definitions.map((def, i) => 
-        `${i + 1}. (${def.partOfSpeech}) ${def.text}`
-      ).join('\n');
+      return (
+        <div className="flex flex-col gap-2">
+        <ul>
+        {data.definitions.map((def, index) => (
+          <li key={index} className="text-gray-700 list-disc ml-4">
+          ({def.partOfSpeech}) {def.text}
+          </li>
+        ))}
+        </ul>
+        </div>
+      );
     } else if (activeFilter === 'synonyms') {
       return (
         <div className="flex flex-col gap-2">
+          <ul>
           {data.synonyms.map((synonym, index) => (
             <li key={index} className="text-gray-700 list-disc ml-4">
               {synonym}
             </li>
           ))}
+          </ul>
         </div>
       );
     }
