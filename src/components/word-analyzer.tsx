@@ -276,7 +276,15 @@ const WordAnalyzer = () => {
         `${i + 1}. (${def.partOfSpeech}) ${def.text}`
       ).join('\n');
     } else if (activeFilter === 'synonyms') {
-      return data.synonyms.join(', ');
+      return (
+        <div className="flex flex-col gap-2">
+          {data.synonyms.map((synonym, index) => (
+            <li key={index} className="text-gray-700 list-disc ml-4">
+              {synonym}
+            </li>
+          ))}
+        </div>
+      );
     }
   };
 
