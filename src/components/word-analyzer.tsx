@@ -6,14 +6,14 @@ import { CheckSquare, XSquare } from 'lucide-react';
 import _ from 'lodash';
 import YAML from 'yaml';
 
-const WordAnalyzer = () => {
+const WordAnalyzer: React.FC = () => { 
   // Get word from URL
   const word = window.location.search.slice(1).toLowerCase() || 'example';
 
   // State management
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
-  const [filterResult, setFilterResult] = useState('');
+  const [filterResult, setFilterResult] = useState<string | JSX.Element>('');
   const [wordData, setWordData] = useState({});  // Changed to store multiple words
   const [wordlist, setWordlist] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -392,11 +392,13 @@ const WordAnalyzer = () => {
           anagrams.length > 0 
             ? (
                 <div className="flex flex-col gap-2">
+                  <ul>
                   {anagrams.map((anagram, index) => (
-                    <div key={index} className="text-gray-700">
-                      {index + 1}. {anagram}
-                    </div>
+                    <li key={index} className="text-gray-700 list-disc ml-4">
+                      {anagram}
+                    </li>
                   ))}
+                  </ul>
                 </div>
               )
             : `No valid anagrams found for "${selected}"`
