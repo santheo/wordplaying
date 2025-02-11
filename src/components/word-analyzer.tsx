@@ -130,33 +130,24 @@ const WordAnalyzer = () => {
     return Array.from(result);
   };
 
-  // Cryptic abbreviations dictionary
-  const crypticDict = {
-    "A": ["Accepted", "Afternoon", "Answer", "Area", "Army"],
-    "AM": ["Morning", "Amplitude Modulation", "Before Noon"],
-    "APT": ["Apartment", "Appropriate", "Aptitude"],
-    "ART": ["Article", "Artificial", "Artistic"],
-    "BE": ["Being", "Belgium", "Beryllium"],
-    "BED": ["Bedroom", "Base Edge Distance", "Basic Engineering Design"],
-    "CAT": ["Feline", "Computerized Axial Tomography", "Clear Air Turbulence"],
-    "DOG": ["Domestic Operating Guide", "Direction Of Growth", "Deed Of Gift"],
-    "EXAM": ["Examination", "Example", "Exercise And Movement"],
-    "EX": ["Former", "Exercise", "Example"],
-    "LAB": ["Laboratory", "Labor", "Launch Approval Board"],
-    "LED": ["Light Emitting Diode", "Lead", "Leadership Education Development"],
-    "ME": ["Maine", "Mechanical Engineer", "Middle East"],
-    "MED": ["Medical", "Mediterranean", "Medieval"],
-    "PLE": ["Please", "Plural", "Personal Learning Environment"],
-    "PRO": ["Professional", "Procedure", "Program"],
-    "RAM": ["Random Access Memory", "Battering Force", "Royal Air Maroc"],
-    "RED": ["Reduce", "Reference Exchange Data", "Research and Engineering Development"],
-    "SAT": ["Saturday", "Scholastic Assessment Test", "Satellite"],
-    "SUB": ["Submarine", "Substitute", "Subordinate"],
-    "TAB": ["Tabulate", "Technical Advisory Board", "Tactical Air Base"],
-    "TEST": ["Testing", "Testosterone", "Technical Evaluation Support Team"],
-    "THE": ["Theory", "Thermal", "Therapeutic"],
-    "USE": ["Utilize", "User Support Environment", "Universal Stock Exchange"]
-  };
+  // State for cryptic dictionary
+  const [crypticDict, setCrypticDict] = useState({});
+
+  // Load cryptic dictionary
+  useEffect(() => {
+    const loadCrypticDict = async () => {
+      try {
+        const response = await window.fs.readFile('cryptic-dict.json', { encoding: 'utf8' });
+        const dict = JSON.parse(response);
+        setCrypticDict(dict);
+      } catch (error) {
+        console.error('Error loading cryptic dictionary:', error);
+        setError('Failed to load cryptic dictionary');
+      }
+    };
+    
+    loadCrypticDict();
+  }, []);
 
   // Fetch initial word data
   useEffect(() => {
