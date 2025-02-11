@@ -64,12 +64,17 @@ const WordAnalyzer = () => {
         setIsLoading(false);
         return false;
       }
+      
+      // strip XML tags
+      const strimXMLTags = (text) => {
+        return text.replace(/<\/?xref>/g, '');
+      };
 
       // Process the data before updating state
       const newWordData = {
         definitions: definitions.map(def => ({
           partOfSpeech: def.partOfSpeech || 'unknown',
-          text: def.text || 'No definition available'
+          text: strimXMLTags(def.text) || 'No definition available'
         })),
         synonyms
       };
