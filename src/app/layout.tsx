@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wordsmither",
+  title: "Wordplaying",
   description: "Cryptic clue construction helper",
 };
 
