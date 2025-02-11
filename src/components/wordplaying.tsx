@@ -65,10 +65,8 @@ const indicatorTypes = [
 ];
 
 const Wordplaying = (): React.ReactElement => {
-  // Get word from URL
-  const word = window.location.search.slice(1).toLowerCase() || 'example';
-
   // State management
+  const [word, setWord] = useState('example');
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
@@ -80,6 +78,14 @@ const Wordplaying = (): React.ReactElement => {
   const [activeIndicator, setActiveIndicator] = useState<string | null>(null);
   const [indicatorLists, setIndicatorLists] = useState<IndicatorLists>({});
   const [crypticDict, setCrypticDict] = useState<CrypticDictionary>({});
+
+  // Get word from URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const qsWord = window.location.search.slice(1).toLowerCase() || 'example';
+      setWord(qsWord);
+    }
+  }, []);
 
   // Fetch word data from Wordnik
   const fetchWordData = async (wordToFetch: string) => {
@@ -166,7 +172,10 @@ const Wordplaying = (): React.ReactElement => {
     }
   };
 
-
+  // Fetch initial word data
+  useEffect(() => {
+    fetchWordData(word);
+  }, [word]);
 
   // Handle filter click
   const handleFilterClick = (filterId: string) => {
@@ -318,10 +327,6 @@ const Wordplaying = (): React.ReactElement => {
     
     loadCrypticDict();
   }, []);
-  // Fetch initial word data
-  useEffect(() => {
-    fetchWordData(word);
-  }, [word]);
 
   // Display word data based on active filter
   const displayWordData = (wordToDisplay: string) => {
