@@ -147,7 +147,7 @@ const WordAnalyzer: React.FC = () => {
   useEffect(() => {
     const loadIndicatorList = async (type) => {
       try {
-        const response = await fetch(`/wordplaying/indicators/${type}.yaml`);
+        const response = await fetch(`/indicators/${type}.yaml`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -249,7 +249,7 @@ const WordAnalyzer: React.FC = () => {
   useEffect(() => {
     const loadWordlist = async () => {
       try {
-        const response = await fetch('/wordplaying/wordlist.txt');
+        const response = await fetch('/wordlist.txt');
         const text = await response.text();
         const words = new Set(text.split('\n').map(word => word.trim().toLowerCase()));
         console.log('Loaded wordlist:', words.size, 'words');
