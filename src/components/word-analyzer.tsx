@@ -8,7 +8,7 @@ import YAML from 'yaml';
 
 const WordAnalyzer = () => {
   // Get word from URL
-  const word = window.location.hash.slice(1).toLowerCase() || 'example';
+  const word = window.location.search.slice(1).toLowerCase() || 'example';
 
   // State management
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
