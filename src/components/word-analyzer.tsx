@@ -18,6 +18,10 @@ const WordAnalyzer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // New state for indicators
+  const [showIndicators, setShowIndicators] = useState(false);
+  const [activeIndicator, setActiveIndicator] = useState(null);
+
   // Fetch word data from Wordnik
   const fetchWordData = async (wordToFetch) => {
     if (wordData[wordToFetch]) {
@@ -79,12 +83,83 @@ const WordAnalyzer = () => {
 
   // Available filters
   const filters = [
-    { id: 'definition', label: 'Definition' },
-    { id: 'synonyms', label: 'Synonyms' },
-    { id: 'cryptic', label: 'Abbreviations' },
-    { id: 'anagrams', label: 'Anagrams' },
+    { id: 'definition', label: 'Def' },
+    { id: 'synonyms', label: 'Syn' },
+    { id: 'cryptic', label: 'Abbr' },
+    { id: 'anagrams', label: 'Anagram' },
     { id: 'contains', label: 'Center' },
+    { id: 'indicators', label: 'Indicators' },
   ];
+
+  // Secondary nav for indicators
+  const indicatorTypes = [
+    { id: 'anagrams', label: 'Anagrams' },
+    { id: 'hidden', label: 'Hidden' },
+    { id: 'reversal', label: 'Reversal' },
+    { id: 'first', label: 'First' },
+    { id: 'last', label: 'Last' },
+    { id: 'outside', label: 'Outside' },
+    { id: 'inside', label: 'Inside' },
+  ];
+
+  // Handle filter click
+  const handleFilterClick = (filterId) => {
+    if (filterId === 'indicators') {
+      setShowIndicators(true);
+      setActiveFilter('indicators');
+    } else {
+      setActiveFilter(filterId);
+      setShowIndicators(false);
+      setActiveIndicator(null);
+    }
+  };
+
+  // State for indicator lists
+  const [indicatorLists, setIndicatorLists] = useState({});
+
+
+  // Load indicator lists
+  useEffect(() => {
+    const loadIndicatorList = async (type) => {
+      try {
+        const response = await window.fs.readFile(`indicators/${type}.txt`, { encoding: 'utf8' });
+        const words = response.trim().split('\n').map(word => word.trim());
+        setIndicatorLists(prev => ({
+          ...prev,
+          [type]: words
+        }));
+      } catch (error) {
+        console.error(`Error loading ${type} indicators:`, error);
+        setIndicatorLists(prev => ({
+          ...prev,
+          [type]: [`Error loading ${type} indicators`]
+        }));
+      }
+    };
+
+    // Load all indicator lists
+    indicatorTypes.forEach(({ id }) => {
+      loadIndicatorList(id);
+    });
+  }, []);
+
+  // Handle indicator click
+  const handleIndicatorClick = (indicatorId) => {
+    setActiveIndicator(indicatorId);
+    
+    const indicatorWords = indicatorLists[indicatorId] || [];
+    setFilterResult(
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-2 gap-2">
+          {indicatorWords.map((word, index) => (
+            <div key={index} className="text-gray-700">
+              {index + 1}. {word}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   // Select/deselect all letters
   const selectAll = () => {
@@ -376,7 +451,7 @@ const WordAnalyzer = () => {
           {filters.map(filter => (
             <button
               key={filter.id}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => handleFilterClick(filter.id)}
               className={`
                 px-4 py-2 rounded-full text-sm font-medium
                 transition-colors duration-200
@@ -389,6 +464,27 @@ const WordAnalyzer = () => {
             </button>
           ))}
         </div>
+
+        {/* Secondary nav for indicators */}
+        {showIndicators && (
+          <div className="flex flex-wrap gap-2 mb-6 justify-center">
+            {indicatorTypes.map(indicator => (
+              <button
+                key={indicator.id}
+                onClick={() => handleIndicatorClick(indicator.id)}
+                className={`
+                  px-4 py-2 rounded-full text-sm font-medium
+                  transition-colors duration-200
+                  ${activeIndicator === indicator.id
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}
+                `}
+              >
+                {indicator.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Results display */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
