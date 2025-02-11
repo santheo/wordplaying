@@ -67,7 +67,7 @@ const WordAnalyzer: React.FC = () => {
       
       // strip XML tags
       const stripXMLTags = (text) => {
-        return text.replace(/<\/?xref>/g, '');
+        return text ? text.replace(/<\/?xref>/g, '') : '';
       };
 
       // Process the data before updating state
