@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
 import YAML from 'yaml';
@@ -66,7 +66,7 @@ const indicatorTypes = [
 
 const Wordplaying = (): React.ReactElement => {
   // State management
-  const [word, setWord] = useState('example');
+  const [word, setWord] = useState('');
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
   const [activeFilter, setActiveFilter] = useState('definition');
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
@@ -88,7 +88,9 @@ const Wordplaying = (): React.ReactElement => {
   }, []);
 
   // Fetch word data from Wordnik
-  const fetchWordData = async (wordToFetch: string) => {
+  const fetchWordData = useCallback(async (wordToFetch: string) => {
+    if (wordToFetch === '') return; 
+    
     if (wordData[wordToFetch]) {
       return true; // Already have this word's data
     }
@@ -143,7 +145,6 @@ const Wordplaying = (): React.ReactElement => {
         synonyms
       };
 
-
       // Update state in a single batch
       setWordData(prevData => ({
         ...prevData,
@@ -170,12 +171,12 @@ const Wordplaying = (): React.ReactElement => {
       setIsLoading(false);
       return false;
     }
-  };
+  }, [wordData]);
 
   // Fetch initial word data
   useEffect(() => {
     fetchWordData(word);
-  }, [word]);
+  }, [word, fetchWordData]);
 
   // Handle filter click
   const handleFilterClick = (filterId: string) => {
@@ -365,15 +366,10 @@ const Wordplaying = (): React.ReactElement => {
   useEffect(() => {
     const selected = getSelectedString();
     
-    if (selected.length === 0) {
-      setFilterResult('Select some letters to see results');
-      return;
-    }
-
     switch (activeFilter) {
       case 'definition':
       case 'synonyms':
-        if (selected === word && wordData[word]) {
+        if (selected.length === 0 || selected === word && wordData[word]) {
           setFilterResult(
             isLoading ? `Loading ${activeFilter}...` :
             error ? error :
@@ -458,6 +454,8 @@ const Wordplaying = (): React.ReactElement => {
           .filter(word => {
             // The word must be longer than the selected string
             if (word.length <= selected.length) return false;
+
+            if ((word.length - selected.length) % 2 == 1) return false;
             
             // The selected string can't be at the start or end
             const index = word.indexOf(selected);
