@@ -30,56 +30,121 @@ interface WordDataMap {
   [key: string]: WordData;
 }
 
+// TypeScript interfaces
+interface SubNavItem {
+  id: string;
+  label: string;
+}
+
+interface SimpleNavConfig {
+  label: string;
+  simple: true;
+}
+
+interface ComplexNavConfig {
+  label: string;
+  simple?: false;
+  subnav: SubNavItem[];
+}
+
+type NavConfig = {
+  [key: string]: SimpleNavConfig | ComplexNavConfig;
+}
+
 interface IndicatorCategory {
   [key: string]: string[];
 }
 
-interface IndicatorError {
-  error: string;
-}
-
 interface IndicatorLists {
-  [key: string]: IndicatorCategory | IndicatorError;
+  [key: string]: IndicatorCategory;
 }
 
-// Available filters
-const filters = [
-  { id: 'definition', label: 'Def' },
-  { id: 'synonyms', label: 'Syn' },
-  { id: 'cryptic', label: 'Abbr' },
-  { id: 'anagrams', label: 'Anagram' },
-  { id: 'starts', label: 'Starts' },
-  { id: 'center', label: 'Center' },
-  { id: 'ends', label: 'Ends' },
-  { id: 'indicators', label: 'Indicators' },
-];
+interface ViewContext {
+  filter: string;
+  subFilter?: string | null;
+}
 
-// Secondary nav for indicators
-const indicatorTypes = [
-  { id: 'anagrams', label: 'Anagrams' },
-  { id: 'hidden', label: 'Hidden' },
-  { id: 'insertion', label: 'Insertion' },
-  { id: 'deletion', label: 'Deletion' },
-  { id: 'reversal', label: 'Reversal' },
-  { id: 'first', label: 'First' },
-  { id: 'last', label: 'Last' },
-  { id: 'edge', label: 'Edge' },
-];
+const navConfig: NavConfig = {
+  definition: {
+    label: 'Def',
+    // Example of a simple nav item without subnav
+    simple: true
+  },
+  synonyms: {
+    label: 'Syn',
+    simple: true
+  },
+  cryptic: {
+    label: 'Abbr',
+    subnav: [
+      { id: 'standard', label: 'Standard' },
+      { id: 'crossword', label: 'Crossword' },
+      { id: 'specialist', label: 'Specialist' }
+    ]
+  },
+  anagrams: {
+    label: 'Anagram',
+    subnav: [
+      { id: 'wordlist', label: 'Wordlist' },
+      { id: 'nutri', label: 'Nutrimatic' }
+    ]
+  },
+  starts: {
+    label: 'Starts',
+    subnav: [
+      { id: 'wordlist', label: 'Wordlist' },
+      { id: 'onelook', label: 'Onelook' },
+      { id: 'nutri', label: 'Nutrimatic' }
+    ]
+  },
+  center: {
+    label: 'Center',
+    subnav: [
+      { id: 'wordlist', label: 'Wordlist' },
+      { id: 'onelook', label: 'Onelook' },
+      { id: 'nutri', label: 'Nutrimatic' }
+    ]
+  },
+  ends: {
+    label: 'Ends',
+    subnav: [
+      { id: 'wordlist', label: 'Wordlist' },
+      { id: 'onelook', label: 'Onelook' },
+      { id: 'nutri', label: 'Nutrimatic' }
+    ]
+  },
+  indicators: {
+    label: 'Indicators',
+    subnav: [
+      { id: 'anagrams', label: 'Anagrams' },
+      { id: 'hidden', label: 'Hidden' },
+      { id: 'insertion', label: 'Insertion' },
+      { id: 'deletion', label: 'Deletion' },
+      { id: 'reversal', label: 'Reversal' },
+      { id: 'first', label: 'First' },
+      { id: 'last', label: 'Last' },
+      { id: 'edge', label: 'Edge' }
+    ]
+  }
+};
 
 const Wordplaying = (): React.ReactElement => {
-  // State management
+  // Core state
   const [word, setWord] = useState('');
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
+
+  // Nav state
   const [activeFilter, setActiveFilter] = useState('definition');
+  const [activeSubnav, setActiveSubnav] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
+
+  // Other states
   const [wordData, setWordData] = useState<WordDataMap>({});
   const [wordlist, setWordlist] = useState<Set<string>>(new Set());
+  const [crypticDict, setCrypticDict] = useState<CrypticDictionary>({});
+  const [indicatorLists, setIndicatorLists] = useState<IndicatorLists>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showIndicators, setShowIndicators] = useState(false);
-  const [activeIndicator, setActiveIndicator] = useState<string | null>(null);
-  const [indicatorLists, setIndicatorLists] = useState<IndicatorLists>({});
-  const [crypticDict, setCrypticDict] = useState<CrypticDictionary>({});
 
   // Get word from URL
   useEffect(() => {
@@ -180,74 +245,21 @@ const Wordplaying = (): React.ReactElement => {
     fetchWordData(word);
   }, [word, fetchWordData]);
 
-  // Handle filter click
+  // Handle main nav click
   const handleFilterClick = (filterId: string) => {
-    if (filterId === 'indicators') {
-      setShowIndicators(true);
-      setActiveFilter('indicators');
+    setActiveFilter(filterId);
+    // Only set subnav for items that have it
+    const config = navConfig[filterId];
+    if (!config.simple && config.subnav) {
+      setActiveSubnav(config.subnav[0].id);
     } else {
-      setActiveFilter(filterId);
-      setShowIndicators(false);
-      setActiveIndicator(null);
+      setActiveSubnav(null);
     }
   };
 
-  // Load indicator lists
-  useEffect(() => {
-    const loadIndicatorList = async (type: string) => {
-      try {
-        const response = await fetch(`/indicators/${type}.yaml`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const text = await response.text();
-        const data = YAML.parse(text);
-        setIndicatorLists(prev => ({
-          ...prev,
-          [type]: data
-        }));
-      } catch (error) {
-        console.error(`Error loading ${type} indicators:`, error);
-        setIndicatorLists(prev => ({
-          ...prev,
-          [type]: { error: `Error loading ${type} indicators` }
-        }));
-      }
-    };
-    // Load all indicator lists
-    indicatorTypes.forEach(({ id }) => {
-      loadIndicatorList(id);
-    });
-  }, []);
-
-  // Handle indicator click
-  const handleIndicatorClick = (indicatorId: string) => {
-    setActiveIndicator(indicatorId);
-    
-    const indicatorData = indicatorLists[indicatorId];
-    if (!indicatorData) {
-      setFilterResult('Loading indicators...');
-      return;
-    }
-
-    setFilterResult(
-      <div className="flex flex-col gap-4">
-        {Object.entries(indicatorData).map(([category, words]) => (
-          <div key={category} className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-800 mt-4">
-              {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </h3>
-            <ul className="list-disc pl-6 space-y-1">
-              {Array.isArray(words) && words.map((word, index) => (
-                <li key={index} className="text-gray-700">
-                  {word}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    );
+  // Handle subnav click
+  const handleSubnavClick = (subnavId: string) => {
+    setActiveSubnav(subnavId);
   };
 
   // Select/deselect all letters
@@ -295,8 +307,8 @@ const Wordplaying = (): React.ReactElement => {
     return Array.from(result);
   }, []);
 
-  // Load wordlist
   useEffect(() => {
+    // Load wordlist
     const loadWordlist = async () => {
       try {
         const response = await fetch('/wordlist.txt');
@@ -311,11 +323,9 @@ const Wordplaying = (): React.ReactElement => {
     };
     
     loadWordlist();
-  }, []);
 
-  // Load cryptic dictionary
-  useEffect(() => {
-    const loadCrypticDict = async () => {
+      // Load abbreviations
+    const loadAbbreviations = async () => {
       try {
         const response = await fetch('/abbreviations.yaml');
         const text = await response.text();
@@ -328,7 +338,36 @@ const Wordplaying = (): React.ReactElement => {
       }
     };
     
-    loadCrypticDict();
+    loadAbbreviations();
+    
+    // Load indicator lists
+    const loadIndicators = async () => {
+      try {
+        const loadIndicatorList = async (type: string) => {
+          const response = await fetch(`/indicators/${type}.yaml`);
+          const text = await response.text();
+          return YAML.parse(text);
+        };
+        
+        const [anagrams, hidden, insertion, deletion, reversal, first, last, edge] = await Promise.all([
+          loadIndicatorList('anagrams'),
+          loadIndicatorList('hidden'),
+          loadIndicatorList('insertion'),
+          loadIndicatorList('deletion'),
+          loadIndicatorList('reversal'),
+          loadIndicatorList('first'),
+          loadIndicatorList('last'),
+          loadIndicatorList('edge'),
+        ]);
+
+        setIndicatorLists({ anagrams, hidden, insertion, deletion, reversal, first, last, edge });
+      } catch (error) {
+        console.error('Error loading indicator lists:', error);
+        setError('Failed to load indicator lists');
+      }
+    };
+
+    loadIndicators();
   }, []);
 
   // Display word data based on active filter
@@ -367,14 +406,14 @@ const Wordplaying = (): React.ReactElement => {
   // Update results when filter or selection changes
   useEffect(() => {
     const selected = getSelectedString();
-    
-    switch (activeFilter) {
+    const context = getViewContext();
+
+    switch (context.filter) {
       case 'definition':
       case 'synonyms':
         if (selected.length === 0 || selected === word && wordData[word]) {
           setFilterResult(
             isLoading ? `Loading ${activeFilter}...` :
-            error ? error :
             displayWordData(word) || `No ${activeFilter} found`
           );
         } else if (selected !== word) {
@@ -552,7 +591,7 @@ const Wordplaying = (): React.ReactElement => {
         );
         break;
 
-        case 'ends':
+      case 'ends':
         if (!wordlist || wordlist.size === 0) {
           setFilterResult('Loading wordlist...');
           break;
@@ -601,10 +640,94 @@ const Wordplaying = (): React.ReactElement => {
             : `No words found containing "${selected}" at the start.`
         );
         break;
+      case 'indicators':
+        const indicatorType = context.subFilter || 'anagrams';
+        const indicatorCategories = indicatorLists[indicatorType] || [];
+        
+        setFilterResult(
+          <div className="flex flex-col gap-4">
+            {Object.entries(indicatorCategories).map(([category, words]) => (
+              <div key={category} className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  {Array.isArray(words) && words.map((word, index) => (
+                    <li key={index} className="text-gray-700">{word}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        );
+        break;
       default:
         setFilterResult('Select a filter to see results');
     }
-  }, [activeFilter, selectedLetters, wordData, word, isLoading, error]);
+  }, [activeFilter, activeSubnav, selectedLetters, wordData, word, indicatorLists, isLoading]);
+
+  // Render main navigation
+  const renderMainNav = () => (
+    <div className="flex flex-wrap gap-2 mb-6 justify-center">
+      {Object.entries(navConfig).map(([id, config]) => (
+        <button
+          key={id}
+          onClick={() => handleFilterClick(id)}
+          className={`
+            px-3 py-1 rounded-lg text-sm font-medium
+            transition-colors duration-200
+            ${activeFilter === id
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}
+          `}
+        >
+          {config.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  // Render secondary navigation
+  const renderSubNav = () => {
+    const currentFilter = navConfig[activeFilter];
+    if (currentFilter.simple || !currentFilter?.subnav) return null;
+
+    return (
+      <div className="flex flex-wrap gap-1 mb-6 justify-center">
+        {currentFilter.subnav.map(item => (
+          <button
+            key={item.id}
+            onClick={() => handleSubnavClick(item.id)}
+            className={`
+              px-2 py-1 rounded-lg text-sm font-medium
+              transition-colors duration-200
+              ${activeSubnav === item.id
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}
+            `}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  // Helper function to get current view context
+  const getViewContext = (): ViewContext => {
+    const currentFilter = navConfig[activeFilter];
+    if ('simple' in currentFilter) {
+      return { filter: activeFilter };
+    }
+    return { filter: activeFilter, subFilter: activeSubnav };
+  };
+
+  // Effect to update results when navigation changes
+  useEffect(() => {
+    const context = getViewContext();
+    // Handle result updates based on context
+    // This is where you'd implement the specific logic for each view
+  }, [activeFilter, activeSubnav]);
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -650,45 +773,9 @@ const Wordplaying = (): React.ReactElement => {
           </button>
         </div>
 
-        {/* Filter buttons */}
-        <div className="flex flex-wrap gap-2 mb-6 justify-center">
-          {filters.map(filter => (
-            <button
-              key={filter.id}
-              onClick={() => handleFilterClick(filter.id)}
-              className={`
-                px-3 py-1 rounded-lg text-sm font-medium
-                transition-colors duration-200
-                ${activeFilter === filter.id
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}
-              `}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Secondary nav for indicators */}
-        {showIndicators && (
-          <div className="flex flex-wrap gap-1 mb-6 justify-center">
-            {indicatorTypes.map(indicator => (
-              <button
-                key={indicator.id}
-                onClick={() => handleIndicatorClick(indicator.id)}
-                className={`
-                  px-2 py-1 rounded-lg text-sm font-medium
-                  transition-colors duration-200
-                  ${activeIndicator === indicator.id
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}
-                `}
-              >
-                {indicator.label}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Navigation */}
+        {renderMainNav()}
+        {renderSubNav()}
 
         {/* Results display */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
@@ -697,6 +784,7 @@ const Wordplaying = (): React.ReactElement => {
           </div>
         </div>
       </Card>
+      {error}
     </div>
   );
 };
