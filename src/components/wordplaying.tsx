@@ -48,8 +48,9 @@ const filters = [
   { id: 'synonyms', label: 'Syn' },
   { id: 'cryptic', label: 'Abbr' },
   { id: 'anagrams', label: 'Anagram' },
-  { id: 'contains', label: 'Center' },
   { id: 'starts', label: 'Starts' },
+  { id: 'center', label: 'Center' },
+  { id: 'ends', label: 'Ends' },
   { id: 'indicators', label: 'Indicators' },
 ];
 
@@ -444,7 +445,7 @@ const Wordplaying = (): React.ReactElement => {
         );
         break;
 
-      case 'contains':
+      case 'center':
         if (!wordlist || wordlist.size === 0) {
           setFilterResult('Loading wordlist...');
           break;
@@ -511,11 +512,9 @@ const Wordplaying = (): React.ReactElement => {
             // The word must be longer than the selected string
             if (word.length <= selected.length) return false;
 
-            // The selected string can't be in the middle
-            const index = word.indexOf(selected);
-            if (index !== 0) {
-              return false;
-            }
+            // The selected string must be at the beginning
+            const pattern = new RegExp('^' + selected);
+            return pattern.test(word);
             
             return true;
           })
@@ -542,6 +541,56 @@ const Wordplaying = (): React.ReactElement => {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {startingWords.map((word, index) => (
+                      <div key={index} className="text-gray-700">
+                        {index + 1}. {word} ({word.length})
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            : `No words found containing "${selected}" at the start.`
+        );
+        break;
+
+        case 'ends':
+        if (!wordlist || wordlist.size === 0) {
+          setFilterResult('Loading wordlist...');
+          break;
+        }
+
+        // Find words that contain the selected string at the start
+        const allEndingWords = Array.from(wordlist as Set<string>)
+          .filter(word => {
+            // The word must be longer than the selected string
+            if (word.length <= selected.length) return false;
+
+            // The selected string must be at the end
+            const pattern = new RegExp(selected + '$');
+            return pattern.test(word);
+          })
+          .sort((a: string, b: string) => {
+            // First sort by length
+            if (a.length !== b.length) {
+              return a.length - b.length;
+            }
+            // If lengths are equal, sort alphabetically
+            return a.localeCompare(b);
+          });
+
+        // Take only the first 200 results
+        const endingWords = allEndingWords.slice(0, 200);
+        const hasMoreEndingWords = allEndingWords.length > 200;
+
+        setFilterResult(
+          endingWords.length > 0 
+            ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-gray-600 mb-2">
+                    Found {allEndingWords.length} words containing &apos;{selected}&apos; at the start
+                    {hasMoreEndingWords ? ` (showing first 200)` : ''}:
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {endingWords.map((word, index) => (
                       <div key={index} className="text-gray-700">
                         {index + 1}. {word} ({word.length})
                       </div>
