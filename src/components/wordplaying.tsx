@@ -722,13 +722,6 @@ const Wordplaying = (): React.ReactElement => {
     return { filter: activeFilter, subFilter: activeSubnav };
   };
 
-  // Effect to update results when navigation changes
-  useEffect(() => {
-    const context = getViewContext();
-    // Handle result updates based on context
-    // This is where you'd implement the specific logic for each view
-  }, [activeFilter, activeSubnav]);
-
   return (
     <div className="max-w-2xl mx-auto p-4">
       <Card className="p-6">
