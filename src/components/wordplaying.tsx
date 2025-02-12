@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import NutrimaticResults from './nutrimatic';
+import OneLookResults from './onelook';
 import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare } from 'lucide-react';
 import YAML from 'yaml';
@@ -93,25 +94,25 @@ const navConfig: NavConfig = {
   starts: {
     label: 'Starts',
     subnav: [
-      { id: 'wordlist', label: 'Wordlist' },
-      { id: 'onelook', label: 'Onelook' },
-      { id: 'nutrimatic', label: 'Nutrimatic' }
+      { id: 'onelook', label: 'OneLook' },
+      { id: 'nutrimatic', label: 'Nutrimatic' },
+      { id: 'wordlist', label: 'Wordlist' }
     ]
   },
   center: {
     label: 'Center',
     subnav: [
-      { id: 'wordlist', label: 'Wordlist' },
-      { id: 'onelook', label: 'Onelook' },
-      { id: 'nutrimatic', label: 'Nutrimatic' }
+      { id: 'onelook', label: 'OneLook' },
+      { id: 'nutrimatic', label: 'Nutrimatic' },
+      { id: 'wordlist', label: 'Wordlist' }
     ]
   },
   ends: {
     label: 'Ends',
     subnav: [
-      { id: 'wordlist', label: 'Wordlist' },
-      { id: 'onelook', label: 'Onelook' },
-      { id: 'nutrimatic', label: 'Nutrimatic' }
+      { id: 'onelook', label: 'OneLook' },
+      { id: 'nutrimatic', label: 'Nutrimatic' },
+      { id: 'wordlist', label: 'Wordlist' }
     ]
   },
   indicators: {
@@ -550,8 +551,11 @@ const Wordplaying = (): React.ReactElement => {
                 : `No words found containing "${selected}" in the middle`
             );
             break;
+          case 'onelook':
+            setFilterResult(<OneLookResults pattern={`?${selected}?`} />);
+            break;
           case 'nutrimatic':
-            setFilterResult(<NutrimaticResults pattern={`A*${selected}A*`} />);
+            setFilterResult(<NutrimaticResults pattern={`A${selected}A`} />);
             break;
           default:
             break;
@@ -610,6 +614,9 @@ const Wordplaying = (): React.ReactElement => {
                 : `No words found containing "${selected}" at the start.`
             );
             break;
+          case 'onelook':
+            setFilterResult(<OneLookResults pattern={`${selected}*`} />);
+            break;
           case 'nutrimatic':
             setFilterResult(<NutrimaticResults pattern={selected + "A*"} />);
             break;
@@ -667,6 +674,9 @@ const Wordplaying = (): React.ReactElement => {
                   )
                 : `No words found containing "${selected}" at the start.`
             );
+            break;
+          case 'onelook':
+            setFilterResult(<OneLookResults pattern={`*${selected}`} />);
             break;
           case 'nutrimatic':
             setFilterResult(<NutrimaticResults pattern={`A*${selected}`} />);
