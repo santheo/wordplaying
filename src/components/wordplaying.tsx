@@ -86,7 +86,7 @@ const navConfig: NavConfig = {
     label: 'Anagram',
     subnav: [
       { id: 'wordlist', label: 'Wordlist' },
-      { id: 'nutri', label: 'Nutrimatic' }
+      { id: 'nutrimatic', label: 'Nutrimatic' }
     ]
   },
   starts: {
@@ -94,7 +94,7 @@ const navConfig: NavConfig = {
     subnav: [
       { id: 'wordlist', label: 'Wordlist' },
       { id: 'onelook', label: 'Onelook' },
-      { id: 'nutri', label: 'Nutrimatic' }
+      { id: 'nutrimatic', label: 'Nutrimatic' }
     ]
   },
   center: {
@@ -102,7 +102,7 @@ const navConfig: NavConfig = {
     subnav: [
       { id: 'wordlist', label: 'Wordlist' },
       { id: 'onelook', label: 'Onelook' },
-      { id: 'nutri', label: 'Nutrimatic' }
+      { id: 'nutrimatic', label: 'Nutrimatic' }
     ]
   },
   ends: {
@@ -110,7 +110,7 @@ const navConfig: NavConfig = {
     subnav: [
       { id: 'wordlist', label: 'Wordlist' },
       { id: 'onelook', label: 'Onelook' },
-      { id: 'nutri', label: 'Nutrimatic' }
+      { id: 'nutrimatic', label: 'Nutrimatic' }
     ]
   },
   indicators: {
@@ -540,55 +540,65 @@ const Wordplaying = (): React.ReactElement => {
         break;
 
       case 'starts':
-        if (!wordlist || wordlist.size === 0) {
-          setFilterResult('Loading wordlist...');
-          break;
-        }
-
-        // Find words that contain the selected string at the start
-        const allStartingWords = Array.from(wordlist as Set<string>)
-          .filter(word => {
-            // The word must be longer than the selected string
-            if (word.length <= selected.length) return false;
-
-            // The selected string must be at the beginning
-            const pattern = new RegExp('^' + selected);
-            return pattern.test(word);
-            
-            return true;
-          })
-          .sort((a: string, b: string) => {
-            // First sort by length
-            if (a.length !== b.length) {
-              return a.length - b.length;
+        switch (activeSubnav) {
+          case 'wordlist':
+            if (!wordlist || wordlist.size === 0) {
+              setFilterResult('Loading wordlist...');
+              break;
             }
-            // If lengths are equal, sort alphabetically
-            return a.localeCompare(b);
-          });
 
-        // Take only the first 200 results
-        const startingWords = allStartingWords.slice(0, 200);
-        const hasMoreStartingWords = allStartingWords.length > 200;
+            // Find words that contain the selected string at the start
+            const allStartingWords = Array.from(wordlist as Set<string>)
+              .filter(word => {
+                // The word must be longer than the selected string
+                if (word.length <= selected.length) return false;
 
-        setFilterResult(
-          startingWords.length > 0 
-            ? (
-                <div className="flex flex-col gap-2">
-                  <p className="text-gray-600 mb-2">
-                    Found {allStartingWords.length} words containing &apos;{selected}&apos; at the start
-                    {hasMoreStartingWords ? ` (showing first 200)` : ''}:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {startingWords.map((word, index) => (
-                      <div key={index} className="text-gray-700">
-                        {index + 1}. {word} ({word.length})
+                // The selected string must be at the beginning
+                const pattern = new RegExp('^' + selected);
+                return pattern.test(word);
+                
+                return true;
+              })
+              .sort((a: string, b: string) => {
+                // First sort by length
+                if (a.length !== b.length) {
+                  return a.length - b.length;
+                }
+                // If lengths are equal, sort alphabetically
+                return a.localeCompare(b);
+              });
+
+            // Take only the first 200 results
+            const startingWords = allStartingWords.slice(0, 200);
+            const hasMoreStartingWords = allStartingWords.length > 200;
+
+            setFilterResult(
+              startingWords.length > 0 
+                ? (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-gray-600 mb-2">
+                        Found {allStartingWords.length} words containing &apos;{selected}&apos; at the start
+                        {hasMoreStartingWords ? ` (showing first 200)` : ''}:
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {startingWords.map((word, index) => (
+                          <div key={index} className="text-gray-700">
+                            {index + 1}. {word} ({word.length})
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            : `No words found containing "${selected}" at the start.`
-        );
+                    </div>
+                  )
+                : `No words found containing "${selected}" at the start.`
+            );
+            break;
+          case 'nutrimatic':
+            setFilterResult(
+            );
+            break;
+          default:
+            break;
+          }
         break;
 
       case 'ends':
