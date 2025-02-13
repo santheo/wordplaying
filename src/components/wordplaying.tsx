@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import NutrimaticResults from './nutrimatic';
 import OneLookResults from './onelook';
 import { Card } from '@/components/ui/card';
-import { CheckSquare, XSquare } from 'lucide-react';
+import { CheckSquare, XSquare, TriangleAlert } from 'lucide-react';
 import YAML from 'yaml';
 
 interface Definition {
@@ -78,11 +78,7 @@ const navConfig: NavConfig = {
   },
   cryptic: {
     label: 'Abbr',
-    subnav: [
-      { id: 'standard', label: 'Standard' },
-      { id: 'crossword', label: 'Crossword' },
-      { id: 'specialist', label: 'Specialist' }
-    ]
+    simple: true
   },
   anagrams: {
     label: 'Anagram',
@@ -444,6 +440,17 @@ const Wordplaying = (): React.ReactElement => {
       case 'cryptic':
         const upperSelected = selected.toUpperCase();
         const crypticResult = crypticDict[selected.toLowerCase()];
+
+        if (!selected) {
+          setFilterResult(
+            <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
+              <TriangleAlert className="w-5 h-5" />
+              Select some letters
+            </div>
+          );
+          break;
+        }
+
         setFilterResult(
           crypticResult 
             ? (
@@ -457,7 +464,7 @@ const Wordplaying = (): React.ReactElement => {
                   </ul>
                 </div>
               )
-            : `No cryptic abbreviations found for "${upperSelected}"`
+            : <p>No cryptic abbreviations found for <code className="bg-gray-100 px-2 py-1 rounded">{upperSelected}</code>.</p>
         );
         break;
       case 'anagrams':
