@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import NutrimaticResults from './nutrimatic';
 import OneLookResults from './onelook';
-import { Card } from '@/components/ui/card';
 import { CheckSquare, XSquare, TriangleAlert } from 'lucide-react';
 import YAML from 'yaml';
 
@@ -53,14 +52,6 @@ type NavConfig = {
   [key: string]: SimpleNavConfig | ComplexNavConfig;
 }
 
-interface IndicatorCategory {
-  [key: string]: string[];
-}
-
-interface IndicatorLists {
-  [key: string]: IndicatorCategory;
-}
-
 interface ViewContext {
   filter: string;
   subFilter?: string | null;
@@ -105,19 +96,6 @@ const navConfig: NavConfig = {
       { id: 'nutrimatic', label: 'Nutrimatic' },
       { id: 'wordlist', label: 'Wordlist' }
     ]
-  },
-  indicators: {
-    label: 'Indicators',
-    subnav: [
-      { id: 'anagrams', label: 'Anagrams' },
-      { id: 'hidden', label: 'Hidden' },
-      { id: 'insertion', label: 'Insertion' },
-      { id: 'deletion', label: 'Deletion' },
-      { id: 'reversal', label: 'Reversal' },
-      { id: 'first', label: 'First' },
-      { id: 'last', label: 'Last' },
-      { id: 'edge', label: 'Edge' }
-    ]
   }
 };
 
@@ -135,7 +113,6 @@ const Wordplaying = (): React.ReactElement => {
   const [wordData, setWordData] = useState<WordDataMap>({});
   const [wordlist, setWordlist] = useState<Set<string>>(new Set());
   const [crypticDict, setCrypticDict] = useState<CrypticDictionary>({});
-  const [indicatorLists, setIndicatorLists] = useState<IndicatorLists>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -332,35 +309,6 @@ const Wordplaying = (): React.ReactElement => {
     };
     
     loadAbbreviations();
-    
-    // Load indicator lists
-    const loadIndicators = async () => {
-      try {
-        const loadIndicatorList = async (type: string) => {
-          const response = await fetch(`/indicators/${type}.yaml`);
-          const text = await response.text();
-          return YAML.parse(text);
-        };
-        
-        const [anagrams, hidden, insertion, deletion, reversal, first, last, edge] = await Promise.all([
-          loadIndicatorList('anagrams'),
-          loadIndicatorList('hidden'),
-          loadIndicatorList('insertion'),
-          loadIndicatorList('deletion'),
-          loadIndicatorList('reversal'),
-          loadIndicatorList('first'),
-          loadIndicatorList('last'),
-          loadIndicatorList('edge'),
-        ]);
-
-        setIndicatorLists({ anagrams, hidden, insertion, deletion, reversal, first, last, edge });
-      } catch (error) {
-        console.error('Error loading indicator lists:', error);
-        setError('Failed to load indicator lists');
-      }
-    };
-
-    loadIndicators();
   }, []);
 
   // Display word data based on active filter
@@ -727,31 +675,10 @@ const Wordplaying = (): React.ReactElement => {
             break;
           }
         break;
-      case 'indicators':
-        const indicatorType = context.subFilter || 'anagrams';
-        const indicatorCategories = indicatorLists[indicatorType] || [];
-        
-        setFilterResult(
-          <div className="flex flex-col gap-4">
-            {Object.entries(indicatorCategories).map(([category, words]) => (
-              <div key={category} className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </h3>
-                <ul className="list-disc pl-6 space-y-1">
-                  {Array.isArray(words) && words.map((word, index) => (
-                    <li key={index} className="text-gray-700">{word}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        );
-        break;
       default:
         setFilterResult('Select a filter to see results');
     }
-  }, [activeFilter, activeSubnav, selectedLetters, wordData, word, indicatorLists, isLoading]);
+  }, [activeFilter, activeSubnav, selectedLetters, wordData, word, isLoading]);
 
   // Render main navigation
   const renderMainNav = () => (
@@ -810,8 +737,7 @@ const Wordplaying = (): React.ReactElement => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <Card className="p-6">
+    <div className="max-w-2xl mx-auto">
         {/* Word display with selectable letters */}
         <div className="flex items-center justify-center gap-4 mb-6">
           <button
@@ -863,7 +789,6 @@ const Wordplaying = (): React.ReactElement => {
             {filterResult}
           </div>
         </div>
-      </Card>
       {error}
     </div>
   );

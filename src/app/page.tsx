@@ -1,5 +1,5 @@
-import Wordplaying from '@/components/wordplaying';
+import TabInterface from '@/components/home';
 
 export default function Home() {
-  return <Wordplaying />;
+  return <TabInterface />;
 }
