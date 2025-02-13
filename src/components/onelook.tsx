@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, TriangleAlert } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 
 interface OneLookResultsProps {
   pattern: string;

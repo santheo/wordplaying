@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { TriangleAlert } from 'lucide-react';
 
 interface NutrimaticResultsProps {
   pattern: string;
