@@ -67,16 +67,11 @@ interface ViewContext {
 }
 
 const navConfig: NavConfig = {
-  definition: {
-    label: 'Def',
-    // Example of a simple nav item without subnav
+  dictionary: {
+    label: 'Dict',
     simple: true
   },
-  synonyms: {
-    label: 'Syn',
-    simple: true
-  },
-  cryptic: {
+  abbreviations: {
     label: 'Abbr',
     simple: true
   },
@@ -132,7 +127,7 @@ const Wordplaying = (): React.ReactElement => {
   const [selectedLetters, setSelectedLetters] = useState([...Array(word.length).keys()]);
 
   // Nav state
-  const [activeFilter, setActiveFilter] = useState('definition');
+  const [activeFilter, setActiveFilter] = useState('dictionary');
   const [activeSubnav, setActiveSubnav] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState<string | React.ReactNode>('');
 
@@ -374,31 +369,26 @@ const Wordplaying = (): React.ReactElement => {
     
     if (!data) return null;
 
-    if (activeFilter === 'definition') {
-      return (
-        <div className="flex flex-col gap-2">
-        <ul>
-        {data.definitions.map((def, index) => (
-          <li key={index} className="text-gray-700 list-disc ml-4">
-          ({def.partOfSpeech}) {def.text}
-          </li>
-        ))}
-        </ul>
-        </div>
-      );
-    } else if (activeFilter === 'synonyms') {
-      return (
-        <div className="flex flex-col gap-2">
+    return (
+      <div className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold text-gray-800">Defintion</h2>
           <ul>
+          {data.definitions.map((def, index) => (
+            <li key={index} className="text-gray-700 list-disc ml-4">
+            ({def.partOfSpeech}) {def.text}
+            </li>
+          ))}
+          </ul>
+        <h2 className="text-lg font-semibold text-gray-800">Synonyms</h2>
+        <ul>
           {data.synonyms.map((synonym, index) => (
             <li key={index} className="text-gray-700 list-disc ml-4">
               {synonym}
             </li>
           ))}
           </ul>
-        </div>
-      );
-    }
+      </div>
+    );
   };
 
   // Update results when filter or selection changes
@@ -407,8 +397,7 @@ const Wordplaying = (): React.ReactElement => {
     const context = getViewContext();
 
     switch (context.filter) {
-      case 'definition':
-      case 'synonyms':
+      case 'dictionary':
         if (selected.length === 0 || selected === word && wordData[word]) {
           setFilterResult(
             isLoading ? `Loading ${activeFilter}...` :
@@ -437,9 +426,9 @@ const Wordplaying = (): React.ReactElement => {
           }
         }
         break;
-      case 'cryptic':
+      case 'abbreviations':
         const upperSelected = selected.toUpperCase();
-        const crypticResult = crypticDict[selected.toLowerCase()];
+        const abbrResult = crypticDict[selected.toLowerCase()];
 
         if (!selected) {
           setFilterResult(
@@ -452,22 +441,39 @@ const Wordplaying = (): React.ReactElement => {
         }
 
         setFilterResult(
-          crypticResult 
+          abbrResult 
             ? (
-                <div className="flex flex-col gap-2">
-                  <ul>
-                  {crypticResult.map((result, index) => (
-                    <li key={index} className="text-gray-700 list-disc ml-4">
-                      {result}
-                    </li>
-                  ))}
-                  </ul>
+                <div className="w-full flex flex-col gap-4">
+                  <div className="text-sm text-gray-600">
+                    Meanings for the abbrevication
+                    <code className="bg-gray-100 px-2 py-1 rounded">{upperSelected}</code>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <ul>
+                    {abbrResult.map((result, index) => (
+                      <li key={index} className="text-gray-700 list-disc ml-4">
+                        {result}
+                      </li>
+                    ))}
+                    </ul>
+                  </div>
                 </div>
               )
             : <p>No cryptic abbreviations found for <code className="bg-gray-100 px-2 py-1 rounded">{upperSelected}</code>.</p>
         );
         break;
       case 'anagrams':
+
+        if (!selected) {
+          setFilterResult(
+            <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
+              <TriangleAlert className="w-5 h-5" />
+              Select some letters
+            </div>
+          );
+          break;
+        }
+
         switch (activeSubnav) {
           case 'wordlist':
             if (!wordlist || wordlist.size === 0) {
@@ -502,6 +508,16 @@ const Wordplaying = (): React.ReactElement => {
         }
         break;
       case 'center':
+        if (!selected) {
+          setFilterResult(
+            <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
+              <TriangleAlert className="w-5 h-5" />
+              Select some letters
+            </div>
+          );
+          break;
+        }
+
         switch (activeSubnav) {
           case 'wordlist':
 
@@ -569,8 +585,18 @@ const Wordplaying = (): React.ReactElement => {
         }
         break;
       case 'starts':
+        if (!selected) {
+          setFilterResult(
+            <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
+              <TriangleAlert className="w-5 h-5" />
+              Select some letters
+            </div>
+          );
+          break;
+        }
         switch (activeSubnav) {
           case 'wordlist':
+
             if (!wordlist || wordlist.size === 0) {
               setFilterResult('Loading wordlist...');
               break;
@@ -632,6 +658,15 @@ const Wordplaying = (): React.ReactElement => {
         }
         break;
       case 'ends':
+        if (!selected) {
+          setFilterResult(
+            <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
+              <TriangleAlert className="w-5 h-5" />
+              Select some letters
+            </div>
+          );
+          break;
+        }
         switch (activeSubnav) {
           case 'wordlist':
             if (!wordlist || wordlist.size === 0) {

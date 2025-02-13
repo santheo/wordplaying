@@ -11,15 +11,6 @@ const NutrimaticResults: React.FC<NutrimaticResultsProps> = ({ pattern }) => {
     `https://nutrimatic.org/2024/?q=${encodeURIComponent(pattern)}`,
     [pattern]
   );
-  
-  if (pattern.replace(/[^a-z0-9]/g, '') == '') {
-    return (
-      <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
-        <TriangleAlert className="w-5 h-5" />
-        Select some letters
-      </div>
-    );
-  }
 
   return (
     <div className="w-full flex flex-col gap-4">

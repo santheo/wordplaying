@@ -49,15 +49,6 @@ const OneLookResults: React.FC<OneLookResultsProps> = ({ pattern }) => {
     fetchResults();
   }, [pattern]);
 
-  if (pattern.replace(/[^a-zA-Z0-9]/g, '') == '') {
-    return (
-      <div className="text-gray-500 p-4 text-center flex items-center justify-center gap-2">
-        <TriangleAlert className="w-5 h-5" />
-        Select some letters
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
